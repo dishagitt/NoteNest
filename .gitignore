@@ -6,7 +6,7 @@ __pycache__/
 *.pyc
 
 #Virtual Environment
-notes-env/
+notenest-env/
 
 # Environment & Secrets
 .env
