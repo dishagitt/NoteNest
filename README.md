@@ -58,19 +58,19 @@ python3 -m venv venv
 ```bash
 # Windows (PowerShell)
 venv\Scripts\activate
-```
 
 # macOS/Linux
 source venv/bin/activate
 ```
 
 5️⃣ Install Dependencies
-```
+```bash
 pip install -r requirements.txt
 ```
 
 6️⃣ Configure Environment Variables
 Create a .env file in the project root with the following keys:
+
 ```bash
 # Flask
 SECRET_KEY=supersecretkey
