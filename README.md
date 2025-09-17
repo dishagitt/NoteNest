@@ -102,13 +102,10 @@ python app.py
 ```
 
 📌 Usage
-Register or login using email & password.
-
-Or login securely via Google Sign-In.
-
-Create, update, or delete your notes.
-
-Notes are user-specific and protected via JWT authentication.
+- Register or login using email & password.
+- Or login securely via Google Sign-In.
+- Create, update, or delete your notes.
+- Notes are user-specific and protected via JWT authentication.
 
 🤝 Contributing
 Feel free to fork this repo, open issues, and submit pull requests to improve NoteNest.
