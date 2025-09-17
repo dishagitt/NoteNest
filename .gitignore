@@ -1,0 +1,20 @@
+# IDE - Editors
+.vscode/
+
+# Python cache
+__pycache__/
+*.pyc
+
+#Virtual Environment
+notes-env/
+
+# Environment & Secrets
+.env
+
+# googlr client secrets
+client_secret.json
+
+#Ignore Database
+notes.db
+NotesApp/notes.db
+*.db

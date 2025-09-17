@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Notes</title>
+
+    <!-- Internal CSS -->
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #bafaeeff, #9face6);
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+      }
+
+      /* Navbar */
+      .navbar {
+        background: linear-gradient(90deg, #007bff, #0056b3);
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 30px;
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .navbar .left {
+        font-size: 20px;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+      }
+
+      .logo{
+        font-size:30px;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+        margin-left: -90px;
+      }
+
+      .user-menu {
+        position: relative;
+        cursor: pointer;
+      }
+
+      .profile-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid white;
+      }
+
+      /* Dropdown menu hidden by default */
+      .user-menu .dropdown {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 50px;
+        background: #fff;
+        color: #333;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        min-width: 200px;
+        overflow: hidden;
+        z-index: 10;
+        border: 1px solid grey;
+      }
+
+      /* Show dropdown on hover */
+      .user-menu:hover .dropdown {
+        display: block;
+      }
+
+      .dropdown a {
+        display: block;
+        padding: 10px 15px;
+        text-decoration: none;
+        color: #333;
+        border-bottom: 1px solid grey;
+      }
+
+      .dropdown a:hover {
+        background: #f1f1f1;
+      }
+
+      .main {
+        background: #fff;
+        padding: 30px;
+        width: 420px;
+        border-radius: 14px;
+        box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin: 10% auto;
+      }
+
+      .main:hover {
+        transform: translateY(-3px);
+        box-shadow: 0px 10px 24px rgba(0, 0, 0, 0.2);
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 25px;
+        font-size: 24px;
+        color: #222;
+        letter-spacing: 0.5px;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      input[type="text"],
+      textarea {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 15px;
+        width: 95%;
+        transition: all 0.3s ease;
+      }
+
+      input[type="text"]:focus,
+      textarea:focus {
+        border-color: #007bff;
+        box-shadow: 0px 0px 8px rgba(0, 123, 255, 0.3);
+        outline: none;
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 120px;
+      }
+
+      .btn-group {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      button {
+        padding: 12px;
+        border: none;
+        border-radius: 25px;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex: 1;
+      }
+
+      .save-btn {
+        background: linear-gradient(90deg, #007bff, #0056b3);
+        color: white;
+        box-shadow: 0px 4px 10px rgba(0, 91, 187, 0.3);
+      }
+
+      .save-btn:hover {
+        background: linear-gradient(90deg, #0056b3, #004099);
+        transform: translateY(-2px);
+      }
+
+      .close-btn {
+        background: #e0e0e0;
+        color: #333;
+        box-shadow: 0px 4px 10px rgba(180, 180, 180, 0.3);
+      }
+
+      .close-btn:hover {
+        background: #bbb;
+        transform: translateY(-2px);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <div class="navbar">
+      <div class="left">Hello, {{fname}}</div>
+      <div class="logo"> NoteNest </div>
+      <div class="user-menu">
+        <image src='{{ url_for('static', filename='images/user.png')}}'
+        alt="Profile" class="profile-img">
+        <div class="dropdown">
+          <a href="#popup">Change Password</a>
+          <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+      </div>
+    </div>
+
+     {% if message %}
+    <p class="msg">{{ message }}</p>
+    {% endif %} {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %} {% for category, message in messages %}
+    <div class="flash {{ category }}">{{ message }}</div>
+    {% endfor %} {% endif %} {% endwith %}
+    
+    <div class="main">
+      <h1>Edit Note</h1>
+
+      {% for item in items %}
+      <form method="POST" action="{{url_for('updateNote', id=item[0])}}">
+        <input
+          name="title"
+          value="{{item[2]}}"
+          type="text"
+          placeholder="Title"
+          required
+        />
+        <textarea type="text" name="content" required>{{item[3]}}</textarea>
+        <div class="btn-group">
+          <button class="save-btn" type="submit">Save</button>
+
+          <button
+            type="button"
+            class="close-btn"
+            onclick="window.location='{{ url_for('closeEdit') }}'"
+          >
+            Close
+          </button>
+        </div>
+      </form>
+      {% endfor %}
+    </div>
+            <!-- Footer -->
+    <footer
+      style="
+        background: #275d97ff;
+        color: white;
+        text-align: center;
+        padding: 12px 0;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        font-size: 14px;
+        letter-spacing: 0.5px;
+      "
+    >
+      © 2025 Disha Prajapati. All rights reserved.
+    </footer>
+  </body>
+</html>

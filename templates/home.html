@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notes App</title>
+
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #bafaeeff, #9face6);
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        color: #333;
+      }
+
+      /* Navbar */
+      .navbar {
+        background: linear-gradient(90deg, #007bff, #0056b3);
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 30px;
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .navbar .left {
+        font-size: 20px;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+      }
+
+      .logo{
+        font-size:30px;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+        margin-left: -90px;
+      }
+
+      .user-menu {
+        position: relative;
+        cursor: pointer;
+      }
+
+      .profile-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid white;
+      }
+
+      /* Dropdown menu hidden by default */
+      .user-menu .dropdown {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 50px;
+        background: #fff;
+        color: #333;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        min-width: 200px;
+        overflow: hidden;
+        z-index: 10;
+        border: 1px solid grey;
+      }
+
+      /* Show dropdown on hover */
+      .user-menu:hover .dropdown {
+        display: block;
+      }
+
+      .dropdown a {
+        display: block;
+        padding: 10px 15px;
+        text-decoration: none;
+        color: #333;
+        border-bottom: 1px solid grey;
+      }
+
+      .dropdown a:hover {
+        background: #e1e3e6ff;
+      }
+
+      /* Main Container */
+      .main {
+        max-width: 850px;
+        margin: 100px auto;
+        background: #fff;
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        text-align: center;
+        color: #222;
+        margin-bottom: 20px;
+        font-size: 28px;
+        letter-spacing: 1px;
+      }
+
+      form {
+        margin-bottom: 25px;
+      }
+
+      input,
+      textarea {
+        width: 90%;
+        padding: 12px 15px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        font-size: 15px;
+        outline: none;
+        transition: border 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      input:focus,
+      textarea:focus {
+        border: 1px solid #007bff;
+        box-shadow: 0px 0px 6px rgba(0, 123, 255, 0.3);
+      }
+
+      button {
+        background: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 15px;
+        transition: all 0.3s ease;
+      }
+
+      button:hover {
+        background: #0056b3;
+        transform: translateY(-2px);
+        box-shadow: 0px 4px 10px rgba(0, 91, 187, 0.4);
+      }
+
+      /* Notes Table */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 25px;
+        font-size: 15px;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      th,
+      td {
+        border: none;
+        padding: 14px;
+        text-align: center;
+      }
+
+      th {
+        background: #007bff;
+        color: white;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      tr {
+        transition: background 0.3s ease;
+      }
+
+      tr:nth-child(even) {
+        background: #f8f9fa;
+      }
+
+      tr:hover {
+        background: #eaf4ff;
+      }
+
+      .msg {
+        text-align: center;
+        color: green;
+        font-weight: bold;
+        margin-bottom: 20px;
+        font-size: 16px;
+      }
+
+      /* Popup overlay hidden by default */
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        display: none; /* Hidden initially */
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      /* Show when targeted */
+      .overlay:target {
+        display: flex;
+      }
+
+      /* Popup box */
+      .modal {
+        background: #fff;
+        padding: 25px;
+        border-radius: 10px;
+        max-width: 400px;
+        width: 100%;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        position: relative;
+        animation: fadeIn 0.3s ease;
+      }
+
+      /* Close button */
+      .close-x {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        text-decoration: none;
+        font-size: 22px;
+        color: #333;
+        font-weight: bold;
+      }
+
+      /* Buttons inside form */
+      .actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 15px;
+      }
+      .btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .btn.primary {
+        background: #007bff;
+        color: #fff;
+        width: 90%;
+      }
+      /* Flash messages */
+      .flash {
+        margin: 12px auto;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        text-align: left;
+        box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+        max-width: 850px;
+        width: 90%;
+      }
+
+      .flash.error {
+        background: #f8d7da;
+        color: #721c24;
+        border-left: 5px solid #f5c2c7;
+      }
+
+      .flash.info {
+        background: #d1ecf1;
+        color: #0c5460;
+        border-left: 5px solid #bee5eb;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <div class="navbar">
+      <div class="left">Hello, {{fname}}</div>
+      <div class="logo"> NoteNest </div>
+      <div class="user-menu">
+        <image src='{{ url_for('static', filename='images/user.png')}}'
+        alt="Profile" class="profile-img">
+        <div class="dropdown">
+          <a href="#popup">Change Password</a>
+          <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+      </div>
+    </div>
+
+    {% if message %}
+    <p class="msg">{{ message }}</p>
+    {% endif %} {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %} {% for category, message in messages %}
+    {% if not category.startswith("change_password") %}
+    <div class="flash {{ category }}">{{ message }}</div>
+     {% endif %}
+    {% endfor %} {% endif %} {% endwith %}
+
+    <!-- Main Content -->
+    <div class="main">
+      <h1>Notes App</h1>
+      <!-- Add Note Form -->
+      <form method="POST" action="{{ url_for('notesApp') }}">
+        <input name="title" type="text" placeholder="Title" required />
+        <textarea
+          name="content"
+          placeholder="Write your note..."
+          required
+        ></textarea>
+        <button type="submit">Add Note</button>
+      </form>
+
+      <hr />
+
+      <!-- Notes Table -->
+      <table>
+        <tr>
+          <th>No.</th>
+          <th>Title</th>
+          <th>Content</th>
+          <th>Edit</th>
+          <th>Delete</th>
+        </tr>
+
+        {% for item in items %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ item[1] }}</td>
+          <td>{{ item[2] }}</td>
+          <td>
+            <form action="{{ url_for('editPage', id=item[0]) }}" method="GET">
+              <button type="submit" style="margin-top: 20px">Edit</button>
+            </form>
+          </td>
+          <td>
+            <form
+              method="POST"
+              action="{{ url_for('delete', id=item[0]) }}"
+              style="display: inline"
+            >
+              <button type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5">No notes yet!</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+
+    <div
+      id="popup"
+      class="overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalTitle"
+    >
+      <div class="modal" role="document">
+        <a href="#" class="close-x" aria-label="Close">×</a>
+        <h2 id="modalTitle">Change password</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %} 
+        {% for category, message in messages %} 
+        {% if category == "change_password_error" %}
+        <div class="flash error">{{ message }}</div>
+        {% endif %} {% endfor %} {% endif %} {% endwith %}
+
+        <form method="POST" action="{{url_for('change_password')}}">
+          <div class="field">
+            <label for="current">Current password</label>
+            <input
+              name="current_password"
+              id="current"
+              type="password"
+              autocomplete="current-password"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label for="newpass">New password</label>
+            <input
+              name="new_password"
+              id="newpass"
+              type="password"
+              autocomplete="new-password"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label for="confirm">Confirm new password</label>
+            <input
+              name="confirm_password"
+              id="confirm"
+              type="password"
+              autocomplete="new-password"
+              required
+            />
+          </div>
+
+          <div class="actions">
+            <button type="submit" class="btn primary">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+        <!-- Footer -->
+    <footer
+      style="
+        background: #275d97ff;
+        color: white;
+        text-align: center;
+        padding: 12px 0;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        font-size: 14px;
+        letter-spacing: 0.5px;
+      "
+    >
+      © 2025 Disha Prajapati. All rights reserved.
+    </footer>
+  </body>
+</html>
