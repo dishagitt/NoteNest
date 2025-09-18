@@ -43,11 +43,13 @@ flow = Flow.from_client_config(
 app = Flask(__name__)
 app.config.from_object(Config)  # load settings from Config
 
-
+# JWT setup
 app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 app.config["JWT_COOKIE_CSRF_PROTECT"] = False  # Optional for simplicity
 jwt = JWTManager(app)
 
+
+# Mail setup
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
 app.config["MAIL_PORT"] = 465
 app.config["MAIL_USE_SSL"] = True 
@@ -59,6 +61,17 @@ mail = Mail(app)
 
 # Optional: session lifetime from config
 app.permanent_session_lifetime = getattr(Config, "SESSION_LIFETIME", timedelta(days=1))
+
+
+
+# ------------------- NO CACHE -------------------
+@app.after_request
+def add_headers(response):
+    response.headers["Cache-Control"] = " no-cache, no-store, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
+
 
 # ------------------- ROUTES -------------------
 
@@ -73,7 +86,7 @@ def signupPage():
 
 
 @app.route('/home')
-@jwt_required()
+@jwt_required(optional=True)
 def home():
     claims = get_jwt()
     user_id = claims["userId"]
@@ -229,6 +242,7 @@ def callback():
 # ------------------- LOGOUT -------------------
 @app.route('/logout')
 def logout():
+    session.clear() 
     resp = redirect(url_for("startPage"))
     unset_jwt_cookies(resp)
     return resp
