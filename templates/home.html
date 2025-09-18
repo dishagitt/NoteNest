@@ -4,429 +4,233 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Notes App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 
-    <style>
-      body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #bafaeeff, #9face6);
-        margin: 0;
-        padding: 0;
-        height: 100vh;
-        color: #333;
-      }
-
-      /* Navbar */
-      .navbar {
-        background: linear-gradient(90deg, #007bff, #0056b3);
-        color: white;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 15px 30px;
-        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+    <script>
+      // Toggle profile dropdown (onclick)
+      function toggleDropdown(ev) {
+        // prevent the document click handler from immediately closing it
+        if (ev) ev.stopPropagation();
+        document.getElementById("profileDropdown").classList.toggle("hidden");
       }
 
-      .navbar .left {
-        font-size: 20px;
-        font-weight: bold;
-        letter-spacing: 0.5px;
+      // Toggle popup (open/close modal)
+      function togglePopup(ev) {
+        if (ev) ev.stopPropagation();
+        const popup = document.getElementById("popup");
+        popup.classList.toggle("hidden");
+        popup.classList.toggle("flex");
       }
 
-      .logo{
-        font-size:30px;
-        font-weight: bold;
-        letter-spacing: 0.5px;
-        margin-left: -90px;
-      }
+      // Close handlers: click outside closes dropdown and modal; Esc closes modal
+      document.addEventListener("click", function (e) {
+        const profileDropdown = document.getElementById("profileDropdown");
+        if (profileDropdown && !e.target.closest("#profileMenu")) {
+          profileDropdown.classList.add("hidden");
+        }
 
-      .user-menu {
-        position: relative;
-        cursor: pointer;
-      }
+        const popup = document.getElementById("popup");
+        const modal = document.getElementById("popupModal");
+        if (popup && !popup.classList.contains("hidden")) {
+          // if click outside modal content, close modal
+          if (!e.target.closest("#popupModal")) {
+            // hide popup
+            popup.classList.add("hidden");
+            popup.classList.remove("flex");
+          }
+        }
+      });
 
-      .profile-img {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid white;
-      }
-
-      /* Dropdown menu hidden by default */
-      .user-menu .dropdown {
-        display: none;
-        position: absolute;
-        right: 0;
-        top: 50px;
-        background: #fff;
-        color: #333;
-        border-radius: 6px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        min-width: 200px;
-        overflow: hidden;
-        z-index: 10;
-        border: 1px solid grey;
-      }
-
-      /* Show dropdown on hover */
-      .user-menu:hover .dropdown {
-        display: block;
-      }
-
-      .dropdown a {
-        display: block;
-        padding: 10px 15px;
-        text-decoration: none;
-        color: #333;
-        border-bottom: 1px solid grey;
-      }
-
-      .dropdown a:hover {
-        background: #e1e3e6ff;
-      }
-
-      /* Main Container */
-      .main {
-        max-width: 850px;
-        margin: 100px auto;
-        background: #fff;
-        padding: 30px;
-        border-radius: 16px;
-        box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.1);
-      }
-
-      h1 {
-        text-align: center;
-        color: #222;
-        margin-bottom: 20px;
-        font-size: 28px;
-        letter-spacing: 1px;
-      }
-
-      form {
-        margin-bottom: 25px;
-      }
-
-      input,
-      textarea {
-        width: 90%;
-        padding: 12px 15px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 10px;
-        font-size: 15px;
-        outline: none;
-        transition: border 0.3s ease, box-shadow 0.3s ease;
-      }
-
-      input:focus,
-      textarea:focus {
-        border: 1px solid #007bff;
-        box-shadow: 0px 0px 6px rgba(0, 123, 255, 0.3);
-      }
-
-      button {
-        background: #007bff;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 25px;
-        cursor: pointer;
-        font-size: 15px;
-        transition: all 0.3s ease;
-      }
-
-      button:hover {
-        background: #0056b3;
-        transform: translateY(-2px);
-        box-shadow: 0px 4px 10px rgba(0, 91, 187, 0.4);
-      }
-
-      /* Notes Table */
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 25px;
-        font-size: 15px;
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
-      }
-
-      th,
-      td {
-        border: none;
-        padding: 14px;
-        text-align: center;
-      }
-
-      th {
-        background: #007bff;
-        color: white;
-        font-weight: bold;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-
-      tr {
-        transition: background 0.3s ease;
-      }
-
-      tr:nth-child(even) {
-        background: #f8f9fa;
-      }
-
-      tr:hover {
-        background: #eaf4ff;
-      }
-
-      .msg {
-        text-align: center;
-        color: green;
-        font-weight: bold;
-        margin-bottom: 20px;
-        font-size: 16px;
-      }
-
-      /* Popup overlay hidden by default */
-      .overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(4px);
-        display: none; /* Hidden initially */
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-      }
-
-      /* Show when targeted */
-      .overlay:target {
-        display: flex;
-      }
-
-      /* Popup box */
-      .modal {
-        background: #fff;
-        padding: 25px;
-        border-radius: 10px;
-        max-width: 400px;
-        width: 100%;
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-        position: relative;
-        animation: fadeIn 0.3s ease;
-      }
-
-      /* Close button */
-      .close-x {
-        position: absolute;
-        top: 10px;
-        right: 15px;
-        text-decoration: none;
-        font-size: 22px;
-        color: #333;
-        font-weight: bold;
-      }
-
-      /* Buttons inside form */
-      .actions {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        margin-top: 15px;
-      }
-      .btn {
-        padding: 8px 16px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-      }
-      .btn.primary {
-        background: #007bff;
-        color: #fff;
-        width: 90%;
-      }
-      /* Flash messages */
-      .flash {
-        margin: 12px auto;
-        padding: 12px;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 500;
-        text-align: left;
-        box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
-        max-width: 850px;
-        width: 90%;
-      }
-
-      .flash.error {
-        background: #f8d7da;
-        color: #721c24;
-        border-left: 5px solid #f5c2c7;
-      }
-
-      .flash.info {
-        background: #d1ecf1;
-        color: #0c5460;
-        border-left: 5px solid #bee5eb;
-      }
-    </style>
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+          const popup = document.getElementById("popup");
+          if (popup && !popup.classList.contains("hidden")) {
+            popup.classList.add("hidden");
+            popup.classList.remove("flex");
+          }
+        }
+      });
+    </script>
   </head>
-  <body>
+
+  <body class="bg-gradient-to-br from-gray-900 via-blue-950 to-black text-gray-100 min-h-screen flex flex-col">
+
     <!-- Navbar -->
-    <div class="navbar">
-      <div class="left">Hello, {{fname}}</div>
-      <div class="logo"> NoteNest </div>
-      <div class="user-menu">
-        <image src='{{ url_for('static', filename='images/user.png')}}'
-        alt="Profile" class="profile-img">
-        <div class="dropdown">
-          <a href="#popup">Change Password</a>
-          <a href="{{ url_for('logout') }}">Logout</a>
+    <nav class="bg-gradient-to-r from-cyan-700 to-blue-900 shadow-md flex justify-between items-center px-6 py-3">
+      <div class="text-lg font-semibold">Hello, {{fname}}</div>
+      <div class="text-2xl font-bold tracking-wide text-cyan-300 mr-16">NoteNest</div>
+
+      <!-- Profile menu -->
+      <div id="profileMenu" class="relative">
+        <img
+          src="{{ url_for('static', filename='images/user.png') }}"
+          alt="Profile"
+          class="w-10 h-10 rounded-full border-2 border-white cursor-pointer"
+          onclick="toggleDropdown(event)"
+        />
+        <div id="profileDropdown" class="absolute right-0 mt-2 w-48 bg-gray-800 text-gray-100 rounded-md shadow-lg hidden z-50">
+          <!-- Use type="button" and stop propagation when opening modal, then close dropdown -->
+          <button
+            type="button"
+            onclick="event.stopPropagation(); togglePopup(); document.getElementById('profileDropdown').classList.add('hidden');"
+            class="w-full text-left px-4 py-2 hover:bg-cyan-700"
+          >
+            Change Password
+          </button>
+
+          <a href="{{ url_for('logout') }}" class="block px-4 py-2 hover:bg-cyan-700">Logout</a>
         </div>
       </div>
+    </nav>
+
+    <!-- Handle flashes once and capture change-password errors to auto-open modal if needed -->
+    {% set flashed = get_flashed_messages(with_categories=true) %}
+    {% set _ns = namespace(cp=False, cp_msg='') %}
+    {% for category, message in flashed %}
+      {% if category == 'change_password_error' %}
+        {% set _ns.cp = True %}
+        {% set _ns.cp_msg = message %}
+      {% endif %}
+    {% endfor %}
+
+    <!-- General flash messages (not change_password_error) -->
+    <div class="w-6/12 mx-auto mt-4">
+      {% for category, message in flashed %}
+        {% if category != 'change_password_error' %}
+          <div class="my-2 px-4 py-2 rounded-lg shadow-md
+            {% if category == 'error' %} bg-red-900 text-red-200 border-l-4 border-red-500
+            {% elif category == 'info' %} bg-blue-900 text-blue-200 border-l-4 border-blue-500
+            {% else %} bg-gray-800 text-gray-100 {% endif %}">
+            {{ message }}
+          </div>
+        {% endif %}
+      {% endfor %}
     </div>
 
-    {% if message %}
-    <p class="msg">{{ message }}</p>
-    {% endif %} {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %} {% for category, message in messages %}
-    {% if not category.startswith("change_password") %}
-    <div class="flash {{ category }}">{{ message }}</div>
-     {% endif %}
-    {% endfor %} {% endif %} {% endwith %}
+    <!-- Main Content (wider: 90% of viewport) -->
+    <main class="flex-grow mx-auto px-6 py-8 space-y-8 w-6/12">
 
-    <!-- Main Content -->
-    <div class="main">
-      <h1>Notes App</h1>
-      <!-- Add Note Form -->
-      <form method="POST" action="{{ url_for('notesApp') }}">
-        <input name="title" type="text" placeholder="Title" required />
-        <textarea
-          name="content"
-          placeholder="Write your note..."
-          required
-        ></textarea>
-        <button type="submit">Add Note</button>
-      </form>
+      <!-- Add Note Form Card (wide) -->
+      <div class="bg-gray-900 shadow-lg rounded-xl p-8 w-full">
+        <h1 class="text-2xl font-bold text-cyan-400 mb-6 text-center">Add a Note</h1>
+        <form method="POST" action="{{ url_for('notesApp') }}" class="space-y-4">
+          <input
+            name="title"
+            type="text"
+            placeholder="Title"
+            required
+            class="w-full p-3 rounded-lg bg-gray-800 text-gray-200 border border-gray-700 focus:ring-2 focus:ring-cyan-500 focus:outline-none"
+          />
+          <textarea
+            name="content"
+            placeholder="Write your note..."
+            required
+            class="w-full p-3 rounded-lg bg-gray-800 text-gray-200 border border-gray-700 focus:ring-2 focus:ring-cyan-500 focus:outline-none min-h-[120px] resize-y"
+          ></textarea>
+          <button
+            type="submit"
+            class="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-2 rounded-full shadow-md transition"
+          >
+            Add Note
+          </button>
+        </form>
+      </div>
 
-      <hr />
+      <!-- Notes Table Card (wide) -->
+      <div class="bg-gray-900 shadow-lg rounded-xl p-8 w-full">
+        <h2 class="text-2xl font-bold text-cyan-400 mb-6 text-center">Your Notes</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse text-sm">
+            <thead>
+              <tr class="bg-cyan-700 text-white">
+                <th class="px-5 py-3 align-middle text-left">No.</th>
+                <th class="px-5 py-3 align-middle text-left">Title</th>
+                <th class="px-5 py-3 align-middle text-left">Content</th>
+                <th class="px-5 py-3 align-middle text-center">Edit</th>
+                <th class="px-5 py-3 align-middle text-center">Delete</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in items %}
+                <tr class="border-b border-gray-700 hover:bg-gray-800 transition">
+                  <td class="px-5 py-3 align-middle">{{ loop.index }}</td>
+                  <td class="px-5 py-3 align-middle">{{ item[1] }}</td>
+                  <td class="px-5 py-3 align-middle">{{ item[2] }}</td>
+                  <td class="px-5 py-3 align-middle text-center">
+                    <form action="{{ url_for('editPage', id=item[0]) }}" method="GET">
+                      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded">Edit</button>
+                    </form>
+                  </td>
+                  <td class="px-5 py-3 align-middle text-center">
+                    <form method="POST" action="{{ url_for('delete', id=item[0]) }}">
+                      <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+              {% else %}
+                <tr>
+                  <td colspan="5" class="px-5 py-3 text-center text-gray-400">No notes yet!</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
 
-      <!-- Notes Table -->
-      <table>
-        <tr>
-          <th>No.</th>
-          <th>Title</th>
-          <th>Content</th>
-          <th>Edit</th>
-          <th>Delete</th>
-        </tr>
+    <!-- Change Password Modal (JS toggled). modal content has id=popupModal for outside-click detection -->
+    <div id="popup" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden justify-center items-center z-50">
+      <div id="popupModal" class="bg-gray-900 text-gray-100 rounded-lg shadow-xl max-w-md w-full p-6 relative">
+        <button type="button" onclick="togglePopup()" class="absolute top-3 right-4 text-2xl font-bold text-gray-400 hover:text-white">&times;</button>
+        <h2 class="text-xl font-semibold mb-4 text-cyan-400">Change Password</h2>
 
-        {% for item in items %}
-        <tr>
-          <td>{{ loop.index }}</td>
-          <td>{{ item[1] }}</td>
-          <td>{{ item[2] }}</td>
-          <td>
-            <form action="{{ url_for('editPage', id=item[0]) }}" method="GET">
-              <button type="submit" style="margin-top: 20px">Edit</button>
-            </form>
-          </td>
-          <td>
-            <form
-              method="POST"
-              action="{{ url_for('delete', id=item[0]) }}"
-              style="display: inline"
-            >
-              <button type="submit">Delete</button>
-            </form>
-          </td>
-        </tr>
-        {% else %}
-        <tr>
-          <td colspan="5">No notes yet!</td>
-        </tr>
-        {% endfor %}
-      </table>
-    </div>
+        <!-- show change_password_error inside modal if present -->
+        {% if _ns.cp %}
+          <div class="mb-3 p-3 rounded-md bg-red-900 text-red-200 border-l-4 border-red-500">
+            {{ _ns.cp_msg }}
+          </div>
+        {% endif %}
 
-    <div
-      id="popup"
-      class="overlay"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modalTitle"
-    >
-      <div class="modal" role="document">
-        <a href="#" class="close-x" aria-label="Close">×</a>
-        <h2 id="modalTitle">Change password</h2>
-
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %} 
-        {% for category, message in messages %} 
-        {% if category == "change_password_error" %}
-        <div class="flash error">{{ message }}</div>
-        {% endif %} {% endfor %} {% endif %} {% endwith %}
-
-        <form method="POST" action="{{url_for('change_password')}}">
-          <div class="field">
-            <label for="current">Current password</label>
-            <input
-              name="current_password"
-              id="current"
-              type="password"
-              autocomplete="current-password"
-              required
-            />
+        <form method="POST" action="{{ url_for('change_password') }}" class="space-y-3">
+          <div>
+            <label for="current" class="block mb-1">Current Password</label>
+            <input id="current" name="current_password" type="password" required
+                   class="w-full p-2 rounded bg-gray-800 border border-gray-700 focus:ring-2 focus:ring-cyan-500" />
           </div>
 
-          <div class="field">
-            <label for="newpass">New password</label>
-            <input
-              name="new_password"
-              id="newpass"
-              type="password"
-              autocomplete="new-password"
-              required
-            />
+          <div>
+            <label for="newpass" class="block mb-1">New Password</label>
+            <input id="newpass" name="new_password" type="password" required
+                   class="w-full p-2 rounded bg-gray-800 border border-gray-700 focus:ring-2 focus:ring-cyan-500" />
           </div>
 
-          <div class="field">
-            <label for="confirm">Confirm new password</label>
-            <input
-              name="confirm_password"
-              id="confirm"
-              type="password"
-              autocomplete="new-password"
-              required
-            />
+          <div>
+            <label for="confirm" class="block mb-1">Confirm New Password</label>
+            <input id="confirm" name="confirm_password" type="password" required
+                   class="w-full p-2 rounded bg-gray-800 border border-gray-700 focus:ring-2 focus:ring-cyan-500" />
           </div>
 
-          <div class="actions">
-            <button type="submit" class="btn primary">Save</button>
-          </div>
+          <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white py-2 rounded mt-3">Save</button>
         </form>
       </div>
     </div>
-        <!-- Footer -->
-    <footer
-      style="
-        background: #275d97ff;
-        color: white;
-        text-align: center;
-        padding: 12px 0;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        font-size: 14px;
-        letter-spacing: 0.5px;
-      "
-    >
+
+    <!-- Footer -->
+    <footer class="bg-blue-950 text-white text-center py-3 mt-auto">
       © 2025 Disha Prajapati. All rights reserved.
     </footer>
+
+    <!-- Auto-open modal when server flashed change_password_error -->
+    <script>
+      (function () {
+        const shouldOpen = {{ 'true' if _ns.cp else 'false' }};
+        if (shouldOpen) {
+          // open modal on page load so user sees server-side validation errors
+          const popup = document.getElementById('popup');
+          popup.classList.remove('hidden');
+          popup.classList.add('flex');
+        }
+      })();
+    </script>
   </body>
 </html>

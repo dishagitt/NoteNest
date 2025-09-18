@@ -4,221 +4,104 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Edit Notes</title>
-
-    <!-- Internal CSS -->
-    <style>
-      body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #bafaeeff, #9face6);
-        margin: 0;
-        padding: 0;
-        min-height: 100vh;
-      }
-
-      /* Navbar */
-      .navbar {
-        background: linear-gradient(90deg, #007bff, #0056b3);
-        color: white;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 15px 30px;
-        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
-      }
-
-      .navbar .left {
-        font-size: 20px;
-        font-weight: bold;
-        letter-spacing: 0.5px;
-      }
-
-      .logo{
-        font-size:30px;
-        font-weight: bold;
-        letter-spacing: 0.5px;
-        margin-left: -90px;
-      }
-
-      .user-menu {
-        position: relative;
-        cursor: pointer;
-      }
-
-      .profile-img {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid white;
-      }
-
-      /* Dropdown menu hidden by default */
-      .user-menu .dropdown {
-        display: none;
-        position: absolute;
-        right: 0;
-        top: 50px;
-        background: #fff;
-        color: #333;
-        border-radius: 6px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        min-width: 200px;
-        overflow: hidden;
-        z-index: 10;
-        border: 1px solid grey;
-      }
-
-      /* Show dropdown on hover */
-      .user-menu:hover .dropdown {
-        display: block;
-      }
-
-      .dropdown a {
-        display: block;
-        padding: 10px 15px;
-        text-decoration: none;
-        color: #333;
-        border-bottom: 1px solid grey;
-      }
-
-      .dropdown a:hover {
-        background: #f1f1f1;
-      }
-
-      .main {
-        background: #fff;
-        padding: 30px;
-        width: 420px;
-        border-radius: 14px;
-        box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.15);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        margin: 10% auto;
-      }
-
-      .main:hover {
-        transform: translateY(-3px);
-        box-shadow: 0px 10px 24px rgba(0, 0, 0, 0.2);
-      }
-
-      h1 {
-        text-align: center;
-        margin-bottom: 25px;
-        font-size: 24px;
-        color: #222;
-        letter-spacing: 0.5px;
-      }
-
-      form {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-      }
-
-      input[type="text"],
-      textarea {
-        width: 100%;
-        padding: 12px 14px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        font-size: 15px;
-        width: 95%;
-        transition: all 0.3s ease;
-      }
-
-      input[type="text"]:focus,
-      textarea:focus {
-        border-color: #007bff;
-        box-shadow: 0px 0px 8px rgba(0, 123, 255, 0.3);
-        outline: none;
-      }
-
-      textarea {
-        resize: vertical;
-        min-height: 120px;
-      }
-
-      .btn-group {
-        display: flex;
-        justify-content: space-between;
-        gap: 12px;
-      }
-
-      button {
-        padding: 12px;
-        border: none;
-        border-radius: 25px;
-        font-size: 15px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        flex: 1;
-      }
-
-      .save-btn {
-        background: linear-gradient(90deg, #007bff, #0056b3);
-        color: white;
-        box-shadow: 0px 4px 10px rgba(0, 91, 187, 0.3);
-      }
-
-      .save-btn:hover {
-        background: linear-gradient(90deg, #0056b3, #004099);
-        transform: translateY(-2px);
-      }
-
-      .close-btn {
-        background: #e0e0e0;
-        color: #333;
-        box-shadow: 0px 4px 10px rgba(180, 180, 180, 0.3);
-      }
-
-      .close-btn:hover {
-        background: #bbb;
-        transform: translateY(-2px);
-      }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body>
+  <body
+    class="font-sans bg-gradient-to-br from-gray-900 via-blue-950 to-gray-900 min-h-screen flex flex-col"
+  >
     <!-- Navbar -->
-    <div class="navbar">
-      <div class="left">Hello, {{fname}}</div>
-      <div class="logo"> NoteNest </div>
-      <div class="user-menu">
-        <image src='{{ url_for('static', filename='images/user.png')}}'
-        alt="Profile" class="profile-img">
-        <div class="dropdown">
-          <a href="#popup">Change Password</a>
-          <a href="{{ url_for('logout') }}">Logout</a>
+    <nav
+      class="bg-gradient-to-r from-cyan-700 to-blue-900 shadow-md flex justify-between items-center px-6 py-3"
+    >
+      <div class="text-lg font-semibold">Hello, {{fname}}</div>
+      <div class="text-2xl font-bold tracking-wide text-cyan-300 mr-16">
+        NoteNest
+      </div>
+
+      <!-- Profile menu -->
+      <div id="profileMenu" class="relative">
+        <img
+          src="{{ url_for('static', filename='images/user.png') }}"
+          alt="Profile"
+          class="w-10 h-10 rounded-full border-2 border-white cursor-pointer"
+          onclick="toggleDropdown(event)"
+        />
+        <div
+          id="profileDropdown"
+          class="absolute right-0 mt-2 w-48 bg-gray-800 text-gray-100 rounded-md shadow-lg hidden z-50"
+        >
+          <!-- Use type="button" and stop propagation when opening modal, then close dropdown -->
+          <button
+            type="button"
+            onclick="event.stopPropagation(); togglePopup(); document.getElementById('profileDropdown').classList.add('hidden');"
+            class="w-full text-left px-4 py-2 hover:bg-cyan-700"
+          >
+            Change Password
+          </button>
+
+          <a
+            href="{{ url_for('logout') }}"
+            class="block px-4 py-2 hover:bg-cyan-700"
+            >Logout</a
+          >
         </div>
       </div>
-    </div>
+    </nav>
 
-     {% if message %}
-    <p class="msg">{{ message }}</p>
+    <!-- Flash Messages -->
+    {% if message %}
+    <p class="msg text-center text-red-500 mt-4">{{ message }}</p>
     {% endif %} {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %} {% for category, message in messages %}
-    <div class="flash {{ category }}">{{ message }}</div>
+    <div
+      class="flash {{ category }} text-center p-2 bg-cyan-600 text-white rounded-md my-2 w-2/3 mx-auto"
+    >
+      {{ message }}
+    </div>
     {% endfor %} {% endif %} {% endwith %}
-    
-    <div class="main">
-      <h1>Edit Note</h1>
+
+    <!-- Main Form -->
+    <div
+      class="main bg-gray-800 text-white p-10 w-full max-w-2xl rounded-2xl shadow-xl mx-auto mt-20 transition transform hover:-translate-y-1 hover:shadow-2xl"
+    >
+      <h1 class="text-center mb-6 text-3xl font-bold text-cyan-400">
+        Edit Note
+      </h1>
 
       {% for item in items %}
-      <form method="POST" action="{{url_for('updateNote', id=item[0])}}">
+      <form
+        method="POST"
+        action="{{url_for('updateNote', id=item[0])}}"
+        class="flex flex-col gap-5"
+      >
         <input
           name="title"
           value="{{item[2]}}"
           type="text"
           placeholder="Title"
           required
+          class="w-full px-5 py-3 rounded-lg border border-gray-600 bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
         />
-        <textarea type="text" name="content" required>{{item[3]}}</textarea>
-        <div class="btn-group">
-          <button class="save-btn" type="submit">Save</button>
+        <textarea
+          name="content"
+          required
+          class="w-full px-5 py-3 rounded-lg border border-gray-600 bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 min-h-[150px] resize-y"
+        >
+{{item[3]}}</textarea
+        >
+
+        <div class="btn-group flex gap-5">
+          <button
+            type="submit"
+            class="flex-1 px-6 py-3 rounded-full bg-gradient-to-r from-cyan-600 to-blue-800 text-white font-medium shadow-md hover:from-cyan-700 hover:to-blue-900 transform hover:-translate-y-1 transition"
+          >
+            Save
+          </button>
 
           <button
             type="button"
-            class="close-btn"
             onclick="window.location='{{ url_for('closeEdit') }}'"
+            class="flex-1 px-6 py-3 rounded-full bg-gray-400 text-gray-900 font-medium shadow-md hover:bg-gray-500 transform hover:-translate-y-1 transition"
           >
             Close
           </button>
@@ -226,22 +109,25 @@
       </form>
       {% endfor %}
     </div>
-            <!-- Footer -->
-    <footer
-      style="
-        background: #275d97ff;
-        color: white;
-        text-align: center;
-        padding: 12px 0;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        font-size: 14px;
-        letter-spacing: 0.5px;
-      "
-    >
+
+    <!-- Footer -->
+    <footer class="bg-blue-950 text-white text-center py-3 mt-auto">
       © 2025 Disha Prajapati. All rights reserved.
     </footer>
+
+    <!-- Script for dropdown -->
+    <script>
+      function toggleDropdown() {
+        const dropdown = document.getElementById("dropdownMenu");
+        dropdown.classList.toggle("hidden");
+      }
+      // close dropdown if clicked outside
+      window.addEventListener("click", function (e) {
+        const menu = document.getElementById("dropdownMenu");
+        if (!e.target.closest(".user-menu")) {
+          menu.classList.add("hidden");
+        }
+      });
+    </script>
   </body>
 </html>

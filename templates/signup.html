@@ -1,198 +1,57 @@
-<!-- signup.html -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Signup</title>
-    <style>
-      body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%);
-        margin: 0;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-      }
-
-      .container {
-        max-width: 420px;
-        width: 100%;
-        background: #fff;
-        padding: 35px 28px;
-        border-radius: 14px;
-        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.15);
-        text-align: center;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-      }
-
-      .container:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
-      }
-
-      h2 {
-        margin-bottom: 18px;
-        color: #333;
-      }
-
-      input {
-        width: 90%;
-        padding: 12px 14px;
-        margin: 10px 0;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        font-size: 15px;
-        transition: border 0.3s ease, box-shadow 0.3s ease;
-      }
-
-      input:focus {
-        border-color: #007bff;
-        box-shadow: 0px 0px 8px rgba(0, 123, 255, 0.3);
-        outline: none;
-      }
-
-      button {
-        width: 100%;
-        padding: 12px;
-        margin-top: 12px;
-        background: linear-gradient(90deg, #007bff, #0056b3);
-        color: #fff;
-        border: none;
-        border-radius: 25px;
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        box-shadow: 0px 4px 12px rgba(0, 91, 187, 0.3);
-      }
-
-      button:hover {
-        background: linear-gradient(90deg, #0056b3, #004099);
-        transform: translateY(-2px);
-        box-shadow: 0px 6px 14px rgba(0, 91, 187, 0.4);
-      }
-
-      p {
-        margin-top: 14px;
-        font-size: 14px;
-        color: #555;
-      }
-
-      a {
-        color: #007bff;
-        text-decoration: none;
-        font-weight: 500;
-      }
-
-      a:hover {
-        text-decoration: underline;
-      }
-
-      /* Flash messages */
-      .flash {
-        margin: 12px auto; 
-        padding: 12px;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 500;
-        text-align: left;
-        box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
-        max-width: 850px; 
-        width: 90%; 
-      }
-
-      .flash.error {
-        background: #f8d7da;
-        color: #721c24;
-        border-left: 5px solid #f5c2c7;
-      }
-
-      .flash.info {
-        background: #d1ecf1;
-        color: #0c5460;
-        border-left: 5px solid #bee5eb;
-      }
-      .google {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px; /* space between logo and text */
-        background: #202124; /* dark background */
-        color: #fff;
-        border: none;
-        border-radius: 25px;
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: 500;
-        margin-top: 15px;
-        padding: 12px;
-        width: 100%;
-        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
-        transition: all 0.3s ease;
-      }
-
-      .google img {
-        width: 20px;
-        height: 20px;
-        background: #fff;
-        border-radius: 50%;
-        padding: 2px;
-      }
-
-      .google:hover {
-        background: #000;
-        transform: translateY(-2px);
-        box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.6);
-      }
-
-      .link {
-        text-decoration: none;
-      }
-      .link:hover {
-        text-decoration: none;
-      }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body>
-    <div class="container">
-      <h2>Signup</h2>
+  <body class="font-sans bg-gradient-to-br from-blue-900 to-cyan-700 min-h-screen flex items-center justify-center">
 
-      {% with messages = get_flashed_messages(with_categories=true) %} {% if
-      messages %} {% for category, message in messages %}
-      <div class="flash {{ category }}">{{ message }}</div>
-      {% endfor %} {% endif %} {% endwith %}
+    <div class="bg-gray-800/80 rounded-2xl shadow-2xl p-10 w-[28rem] flex flex-col items-center transition-transform transform hover:-translate-y-2">
+      <h2 class="text-2xl font-bold mb-6 text-white">Signup</h2>
 
-      <form action="{{ url_for('send_otp') }}" method="POST">
-        <input type="text" name="fname" placeholder="Full Name" required />
-        <input type="email" name="email" placeholder="Email Address" required />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          required
-        />
-        <input
-          type="password"
-          name="confirm_password"
-          placeholder="Confirm Password"
-          required
-        />
-        <button type="submit">Send OTP</button>
-        <a class="link" href="{{ url_for('google_login') }}">
-          <button class="google" type="button">
-            <img
-              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-              alt="Google Logo"
-            />
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="w-full mb-3 p-2 rounded-md text-sm font-medium text-left 
+            {% if category == 'error' %} bg-red-100 text-red-700 border-l-4 border-red-400
+            {% elif category == 'info' %} bg-blue-100 text-blue-700 border-l-4 border-blue-400
+            {% else %} bg-gray-100 text-gray-700 border-l-4 border-gray-400 {% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+      {% endwith %}
+
+      <form action="{{ url_for('send_otp') }}" method="POST" class="w-full flex flex-col gap-4">
+        <input type="text" name="fname" placeholder="Full Name" required
+          class="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-gray-700 text-white placeholder-gray-300" />
+        <input type="email" name="email" placeholder="Email Address" required
+          class="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-gray-700 text-white placeholder-gray-300" />
+        <input type="password" name="password" placeholder="Password" required
+          class="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-gray-700 text-white placeholder-gray-300" />
+        <input type="password" name="confirm_password" placeholder="Confirm Password" required
+          class="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-gray-700 text-white placeholder-gray-300" />
+
+        <button type="submit" class="w-full bg-gradient-to-r from-blue-900 to-cyan-700 text-white mt-4 py-3 rounded-full shadow-md hover:from-blue-800 hover:to-cyan-600 transform hover:-translate-y-1 transition">
+          Send OTP
+        </button>
+
+        <a href="{{ url_for('google_login') }}">
+          <button type="button" class="w-full flex items-center justify-center gap-3 bg-white text-gray-900 py-3 rounded-full shadow-md hover:bg-gray-100 transform hover:-translate-y-1 transition">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo" class="w-5 h-5"/>
             Continue with Google
           </button>
         </a>
       </form>
 
-      <p>Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+      <p class="mt-4 text-gray-200 text-sm">
+        Already have an account? 
+        <a href="{{ url_for('login') }}" class="text-cyan-400 hover:underline hover:underline-offset-2 font-medium">Login</a>
+      </p>
     </div>
+
   </body>
 </html>

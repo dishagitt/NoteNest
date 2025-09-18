@@ -4,64 +4,41 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reset Password</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #74ebd5, #9face6);
-
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-    }
-    .container {
-      max-width: 400px;
-      background: #fff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-    input, button {
-      width: 90%;
-      padding: 12px;
-      margin: 10px 0;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 15px;
-    }
-    button {
-      border: none;
-      background: #007bff;
-      color: #fff;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    button:hover {
-      background: #0056b3;
-    }
-  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="font-sans bg-gradient-to-br from-blue-900 to-cyan-700 min-h-screen flex items-center justify-center">
 
-<div class="container">
-  <h2>Reset Password</h2>
+  <div class="bg-gray-800/80 rounded-2xl shadow-2xl p-10 w-[26rem] flex flex-col items-center transition-transform transform hover:-translate-y-2">
+    <h2 class="text-2xl font-bold mb-6 text-white">Reset Password</h2>
 
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, message in messages %}
-        <div class="flash {{ category }}">{{ message }}</div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="w-full mb-3 p-2 rounded-md text-sm font-medium text-left 
+            {% if category == 'error' %} bg-red-100 text-red-700 border-l-4 border-red-400
+            {% elif category == 'info' %} bg-blue-100 text-blue-700 border-l-4 border-blue-400
+            {% else %} bg-gray-100 text-gray-700 border-l-4 border-gray-400 {% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
 
-  <form action="{{ url_for('send_reset_otp') }}" method="POST">
-    <input type="email" name="email" placeholder="Enter your registered email" required>
-    <button type="submit">Send OTP</button>
-    <p>Remember password?  <a class="link" href="{{ url_for('startPage') }}">Login</a></p>
-  </form>
-</div>
+    <!-- Reset Password Form -->
+    <form action="{{ url_for('send_reset_otp') }}" method="POST" class="w-full flex flex-col gap-4">
+      <input type="email" name="email" placeholder="Enter your registered email" required
+        class="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-gray-700 text-white placeholder-gray-300" />
+      <button type="submit" class="w-full bg-gradient-to-r from-blue-900 to-cyan-700 text-white py-3 rounded-full shadow-md hover:from-blue-800 hover:to-cyan-600 transform hover:-translate-y-1 transition">
+        Send OTP
+      </button>
+    </form>
+
+    <p class="mt-4 text-gray-300 text-sm">
+      Remember password? 
+      <a href="{{ url_for('startPage') }}" class="text-cyan-400 hover:underline hover:underline-offset-2 font-medium">Login</a>
+    </p>
+  </div>
 
 </body>
 </html>
